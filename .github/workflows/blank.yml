@@ -1,0 +1,99 @@
+name: Terraform reusable workflow
+
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+      AWS_REGION:
+        required: true
+        type: string
+      TF_WORKSPACE:
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_ASSUME_ROLE:
+        required: true
+
+jobs:
+  terraform-init:
+    runs-on: ubuntu-latest
+    env:
+      TF_WORKSPACE: ${{ inputs.TF_WORKSPACE }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ inputs.AWS_REGION }}
+      TF_VAR_assume_role:  ${{ secrets.AWS_ASSUME_ROLE }}
+
+    steps:
+    - id: install-aws-cli
+      uses: unfor19/install-aws-cli-action@v1
+      with:
+        version: 2     # default
+
+    - name: STS validate session info
+      shell: bash
+      run: |
+        echo "AWS_ACCESS_KEY_ID = ${{ secrets.AWS_ACCESS_KEY_ID }}"
+        echo "AWS Region = ${{ vars.AWS_REGION }}"
+        aws --version
+        aws sts get-caller-identity --region ${{ vars.AWS_REGION }}
+        echo "-----------------------------------------------------"
+        aws sts assume-role --role-arn ${{ secrets.AWS_ASSUME_ROLE }} --role-session-name DevopsAdmin-Session --output json
+        echo "-----------------------------------------------------"
+
+    - name: Checkout
+      uses: actions/checkout@v3.5.3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.3.0
+
+    - name: Terraform init
+      id: init
+      shell: bash
+      env:
+        TF_WORKSPACE: "default"
+        # TF_LOG: DEBUG
+      run: |
+        terraform workspace list
+        cd terraform
+        terraform init -input=false
+        echo "TF Provider now initialized"
+        echo "-------------------------------------->>>>>>"
+
+    - name: Terraform format
+      id: fmt
+      shell: bash
+      run: |
+        cd terraform
+        terraform fmt
+
+    - name: Terraform validate
+      id: validate
+      shell: bash
+      run: |
+        cd terraform
+        terraform validate
+
+    - name: Terraform plan
+      id: plan
+      shell: bash
+      run: |
+        cd terraform
+        terraform plan -out=tfplan
+      continue-on-error: false
+        # TF_LOG: DEBUG
+
+    - name: Terraform apply
+      id: apply
+      run: |
+        cd terraform
+        terraform apply -input=false -auto-approve
+      continue-on-error: false
