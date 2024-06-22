@@ -1,4 +1,4 @@
-name: AWS-as-Code-for-dev
+name: AWS-IaC-dev
 run-name: "Requester (${{ github.actor }}) - ${{ github.event.ref }} - ${{ github.event.head_commit.message }}"
 
 on:
