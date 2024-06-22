@@ -1,23 +1,30 @@
+terraform {
+  backend "s3" {
+    bucket         = "terraform.state.mycompany.com"
+    key            = "aws-services1.tfstate"
+    dynamodb_table = "terraform-locks"
+    region         = "us-east-2"
+    encrypt        = true
+  }
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.16"
+    }
+  }
+
+  required_version = ">= 1.2.0"
+}
+
 provider "aws" {
-    region = "us-east-2"
-}
-resource "aws_instance" "web" {
-  instance_type = "t2.micro"
-  ami = "ami-09b4b74c"
-}
-resource "aws_autoscaling_group" "my_asg" {
-  availability_zones        = ["us-east-2a"]
-  name                      = "my_asg"
-  max_size                  = 5
-  min_size                  = 1
-  health_check_grace_period = 300
-  health_check_type         = "ELB"
-  desired_capacity          = 4
-  force_delete              = true
-  launch_configuration      = "my_web_config"
-}
-resource "aws_launch_configuration" "my_web_config" {
-    name = "my_web_config"
-    image_id = "ami-09b4b74c"
-    instance_type = "t2.micro"
+  region="us-east-2"
+  assume_role {
+    role_arn = var.assume_role
+  }
+  default_tags {
+    tags = {
+      Service = var.service
+      Stage   = terraform.workspace
+    }
+  }
 }
