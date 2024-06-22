@@ -1,0 +1,21 @@
+name: AWS-IaC-dev
+run-name: "Requester (${{ github.actor }}) - ${{ github.event.ref }} - ${{ github.event.head_commit.message }}"
+
+on:
+  push:
+    branches:
+      - 'main'
+      
+jobs:
+  terraform_job:
+    uses: aaronnickovich/common-workflows/.github/workflows/terraform-deploy.yaml@main
+    name: Terraform to dev
+    with:
+      env: dev
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      TF_WORKSPACE: dev
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ASSUME_ROLE: ${{ secrets.DEV_AWS_ASSUME_ROLE }}
+
