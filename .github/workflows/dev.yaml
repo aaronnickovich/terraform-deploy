@@ -4,7 +4,10 @@ run-name: "Requester (${{ github.actor }}) - ${{ github.event.ref }} - ${{ githu
 on:
   push:
     branches:
-      - 'main'
+      - main
+  pull_request:
+    branches:
+      - main
       
 jobs:
   terraform_job:
