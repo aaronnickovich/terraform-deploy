@@ -1,6 +1,7 @@
 package terraform.analysis
 
 import rego.v1
+import data.terraform.s3.analsysis.allow as s3allow
 
 import input as tfplan
 
@@ -14,7 +15,7 @@ blast_radius := 30
 # weights assigned for each operation on each resource-type
 weights := {
 	"aws_autoscaling_group": {"delete": 100, "create": 10, "modify": 1},
-	"aws_instance": {"delete": 100, "create": 10, "modify": 1},
+	"aws_instance": {"delete": 10, "create": 1, "modify": 1},
 }
 
 # Consider exactly these resource types in calculations
@@ -56,6 +57,7 @@ allow if {
     score < blast_radius
     not touches_iam
     not touches_aws_iam_user
+    s3allow
 }
 
 ####################
