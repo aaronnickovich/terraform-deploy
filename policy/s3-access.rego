@@ -40,5 +40,6 @@ buckets_without_access_blocks[bucket] {
 
 allow := false {
     resources := buckets_without_access_blocks[_]
+    print(resources)
     resources != []
 }
