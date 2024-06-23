@@ -6,11 +6,3 @@ resource "aws_s3_bucket" "testbucket" {
     Environment = "${terraform.workspace}"
   }
 }
-
-resource "aws_s3_bucket_public_access_block" "testbucket" {
-  bucket = aws_s3_bucket.testbucket.id
-  block_public_acls = true
-  ignore_public_acls = true
-  block_public_policy = true
-  restrict_public_buckets = true
-}
