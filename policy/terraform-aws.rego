@@ -1,7 +1,7 @@
 package terraform.analysis
 
 import rego.v1
-import data.terraform.s3.analsysis.allow as s3allow
+import data.terraform.s3.analysis.allow as s3allow
 
 import input as tfplan
 

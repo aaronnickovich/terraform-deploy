@@ -1,4 +1,4 @@
-package terraform.s3.analsysis
+package terraform.s3.analysis
 
 import future.keywords.if
 
