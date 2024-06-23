@@ -1,4 +1,8 @@
-package main
+package terraform.s3.analysis
+
+import future.keywords.if
+
+default allow := true
 
 is_resource_of_type(resource, type) {
     resource.type == type
@@ -9,7 +13,7 @@ is_s3_bucket(resource) {
 }
 
 is_access_block(resource) {
-    common.is_resource_of_type(resource, "aws_s3_bucket_public_access_block")
+    is_resource_of_type(resource, "aws_s3_bucket_public_access_block")
 }
 
 access_block_of_bucket(resource, bucket) {
@@ -34,8 +38,7 @@ buckets_without_access_blocks[bucket] {
     bucket := buckets_without_access_blocks[_].address
 }
 
-deny[msg] {
+allow := false {
     resources := buckets_without_access_blocks[_]
     resources != []
-    msg := sprintf("S3 bucket has no access blocks: %v", [resources])
 }

@@ -1,6 +1,6 @@
 variable "service" {
   type    = string
-  default = "abc"
+  default = "test"
 }
 
 variable "domain" {

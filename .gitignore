@@ -38,3 +38,5 @@ terraform.rc
 
 example/
 .terraform.lock.hcl
+terraform/.terraform.lock.hcl
+
