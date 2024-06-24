@@ -7,6 +7,7 @@ resource "aws_s3_bucket" "testbucket" {
   }
 }
 
+#Block public access
 resource "aws_s3_bucket_public_access_block" "testbucket" {
   bucket = aws_s3_bucket.testbucket.id
   block_public_acls = true
